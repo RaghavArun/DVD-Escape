@@ -120,10 +120,7 @@ function drawDVD() {
         dvdY - originalY
     );
 
-
-    // =================================================
     // disc
-    // =================================================
 
     ctx.beginPath();
 
@@ -140,10 +137,7 @@ function drawDVD() {
     ctx.fillStyle = dvdColor;
     ctx.fill();
 
-
-    // =================================================
     // hole in disc
-    // =================================================
 
     ctx.beginPath();
 
@@ -160,10 +154,7 @@ function drawDVD() {
     ctx.fillStyle = backgroundColor;
     ctx.fill();
 
-
-    // =================================================
     // DVD Letters
-    // =================================================
 
     ctx.save();
 
@@ -196,10 +187,7 @@ function drawDVD() {
 
     ctx.restore();
 
-
-    // =================================================
     // slit in first D
-    // =================================================
 
     ctx.beginPath();
 
@@ -214,9 +202,7 @@ function drawDVD() {
     ctx.fill();
 
 
-    // =================================================
     // slit in second D
-    // =================================================
 
     ctx.beginPath();
 
@@ -231,9 +217,7 @@ function drawDVD() {
     ctx.fill();
 
 
-    // =================================================
-    // stylized V
-    // =================================================
+    // V Drawing (it's a pointy bottom so has to be drawn)
 
     ctx.beginPath();
 
@@ -259,10 +243,6 @@ function drawDVD() {
 
     ctx.fillStyle = dvdColor;
     ctx.fill();
-
-    // -------------------------------------------------
-    // End of DVD
-    // -------------------------------------------------
 
     ctx.restore();
 }
@@ -327,9 +307,7 @@ function updateDVD() {
     }
 
 
-    // =================================================
     // top / bottom walls
-    // =================================================
 
     else if (hitTop || hitBottom) {
 
@@ -411,9 +389,7 @@ function drawTrail() {
             point.y - originalY
         );
 
-        // =================================================
         // small trail DVD
-        // =================================================
 
         ctx.beginPath();
 
@@ -430,9 +406,7 @@ function drawTrail() {
         ctx.fillStyle = dvdColor;
         ctx.fill();
 
-        // =================================================
         // small hole
-        // =================================================
 
         ctx.beginPath();
 
