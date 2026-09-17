@@ -8,321 +8,20 @@
 
 <canvas id="canvas" width="1200" height="720"></canvas>
 
+<script src="js/config.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/player.js"></script>
+<script src="js/dvd.js"></script>
+<script src="js/collisions.js"></script>
+<script src="js/fireball.js"></script>
+<script src="js/confetti.js"></script>
+
 <script>
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-
-// =====================================================
-// COLORS
-// =====================================================
-
-const lightBackgrounds = [
-    "#FFFFFF",
-    "#E8F1FF",
-    "#FFF0F5",
-    "#E8FFE8",
-    "#FFF8D6"
-];
-
-const darkBackgrounds = [
-    "#111827",
-    "#1E1B4B",
-    "#172554",
-    "#3F1D3D",
-    "#202020"
-];
-
-const lightDVDColors = [
-    "#FFFFFF",
-    "#A7F3D0",
-    "#93C5FD",
-    "#FDE68A",
-    "#FBCFE8"
-];
-
-const darkDVDColors = [
-    "#000000",
-    "#111827",
-    "#312E81",
-    "#064E3B",
-    "#7C2D12"
-];
-
-const leftWall = 155;
-const rightWall = 1005;
-const topWall = 45;
-const bottomWall = 617;
-
-
-// current colors
-let backgroundColor = "#FFFFFF";
-let dvdColor = "#000000";
-
-
-// =====================================================
-// DVD POSITION AND MOVEMENT
-// =====================================================
-
-// starting position
-let dvdX = 400;
-let dvdY = 250;
-
-// movement speed
-let dvdSpeedX = 3;
-let dvdSpeedY = 2;
-
-// confetti
-let confetti = [];
-
-// trail
-let dvdTrail = [];
-let trailCounter = 0;
-
-// =====================================================
-// DVD SETTINGS
-// =====================================================
-
-// original center position of the logo
-const originalX = 400;
-const originalY = 250;
-
-
-// letter settings
-const letterSize = 110;
-const letterSpacing = 60;
-
-
-// disc settings
-const discX = 400;
-const discY = 330;
-const discRadiusX = 160;
-const discRadiusY = 30;
-
-
-// hole settings
-const holeRadiusX = 38;
-const holeRadiusY = 8;
-
-
-// =====================================================
-// DRAW DVD
-// =====================================================
-
-function drawDVD() {
-
-    ctx.save();
-
-    // move entire DVD as one object
-    ctx.translate(
-        dvdX - originalX,
-        dvdY - originalY
-    );
-
-    // disc
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        discX,
-        discY,
-        discRadiusX,
-        discRadiusY,
-        0,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fillStyle = dvdColor;
-    ctx.fill();
-
-    // hole in disc
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        discX,
-        discY,
-        holeRadiusX,
-        holeRadiusY,
-        0,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fillStyle = backgroundColor;
-    ctx.fill();
-
-    // DVD Letters
-
-    ctx.save();
-
-    ctx.fillStyle = dvdColor;
-
-    ctx.font =
-        `italic 900 ${letterSize}px Arial Black, Arial, sans-serif`;
-
-    ctx.textBaseline = "middle";
-
-    // make letters wider to mirror real DVD logo
-    ctx.scale(1.5, 1);
-
-    const letters = ["D", "D"];
-
-    let x = 160;
-
-    for (const letter of letters) {
-
-        ctx.fillText(
-            letter,
-            x,
-            originalY
-        );
-
-        x +=
-            ctx.measureText(letter).width
-            + letterSpacing;
-    }
-
-    ctx.restore();
-
-    // slit in first D
-
-    ctx.beginPath();
-
-    ctx.moveTo(275, 220);
-    ctx.lineTo(314, 220);
-    ctx.lineTo(312, 225);
-    ctx.lineTo(270, 225);
-
-    ctx.closePath();
-
-    ctx.fillStyle = backgroundColor;
-    ctx.fill();
-
-
-    // slit in second D
-
-    ctx.beginPath();
-
-    ctx.moveTo(493, 220);
-    ctx.lineTo(532, 220);
-    ctx.lineTo(530, 225);
-    ctx.lineTo(488, 225);
-
-    ctx.closePath();
-
-    ctx.fillStyle = backgroundColor;
-    ctx.fill();
-
-
-    // V Drawing (it's a pointy bottom so has to be drawn)
-
-    ctx.beginPath();
-
-    // top-left
-    ctx.moveTo(370, 202.5);
-
-    // inner-left
-    ctx.lineTo(400, 202.5);
-
-    // bottom point
-    ctx.lineTo(425, 250);
-
-    // inner-right
-    ctx.lineTo(470, 202.5);
-
-    // top-right
-    ctx.lineTo(500, 202.5);
-
-    // outer-bottom/right
-    ctx.lineTo(420, 300);
-
-    ctx.closePath();
-
-    ctx.fillStyle = dvdColor;
-    ctx.fill();
-
-    ctx.restore();
-}
-
-
-// =====================================================
-// UPDATE DVD POSITION
-// =====================================================
-
-function updateDVD() {
-
-    trailCounter++;
-
-    if (trailCounter >= 8) {
-        dvdTrail.push({
-            x: dvdX,
-            y: dvdY
-        });
-
-        trailCounter = 0;
-    }
-
-    if (dvdTrail.length > 25) {
-        dvdTrail.shift();
-    }
-
-    dvdX += dvdSpeedX;
-    dvdY += dvdSpeedY;
-
-    // check which walls DVD has reached
-
-    const hitLeft = dvdX <= leftWall;
-    const hitRight = dvdX >= rightWall;
-
-    const hitTop = dvdY <= topWall;
-    const hitBottom = dvdY >= bottomWall;
-
-    // corner
-
-    if ((hitLeft || hitRight) && (hitTop || hitBottom)) {
-
-        // reverse both directions
-        dvdSpeedX *= -1;
-        dvdSpeedY *= -1;
-
-        // change colors
-        changeColors();
-
-        createConfetti(dvdX, dvdY);
-    }
-
-
-    // left / right walls
-
-    else if (hitLeft || hitRight) {
-
-        // reverse horizontal direction
-        dvdSpeedX *= -1;
-
-        // change colors
-        changeColors();
-    }
-
-
-    // top / bottom walls
-
-    else if (hitTop || hitBottom) {
-
-        // reverse vertical direction
-        dvdSpeedY *= -1;
-
-        // change colors
-        changeColors();
-    }
-}
-
-
-// =====================================================
 // CHANGE COLORS
-// =====================================================
 
 function changeColors() {
 
@@ -370,119 +69,10 @@ function changeColors() {
     }
 }
 
-// =====================================================
-// TRAIL
-// =====================================================
-
-function drawTrail() {
-    for (let i = 0; i < dvdTrail.length; i++) {
-        const point = dvdTrail[i];
-
-        const opacity = (i / dvdTrail.length) * 0.4;
-
-        ctx.save();
-
-        ctx.globalAlpha = opacity;
-
-        ctx.translate(
-            point.x - originalX,
-            point.y - originalY
-        );
-
-        // small trail DVD
-
-        ctx.beginPath();
-
-        ctx.ellipse(
-            discX,
-            discY,
-            20,
-            4,
-            0,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fillStyle = dvdColor;
-        ctx.fill();
-
-        // small hole
-
-        ctx.beginPath();
-
-        ctx.ellipse(
-            discX,
-            discY,
-            6,
-            1.4,
-            0,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fillStyle = backgroundColor;
-        ctx.fill();
-
-        ctx.restore();
-    }
-}
-
-// =====================================================
-// CONFETTI
-// =====================================================
-
-function createConfetti(x, y) {
-    for (let i = 0; i < 50; i++) {
-
-        confetti.push({
-            x: x,
-            y: y,
-
-            // shoot in a random direction
-            speedX: (Math.random() - 0.5) * 8,
-            speedY: (Math.random() - 0.5) * 8,
-
-            // small random circle
-            radius: Math.random() * 4 + 2,
-
-            // fall downward over time
-            gravity: 0.15,
-
-            // random color
-            color: dvdColor
-        });
-    }
-}
-
-function updateConfetti() {
-    for (let piece of confetti) {
-        piece.x += piece.speedX;
-        piece.y += piece.speedY;
-
-        // gravity
-        piece.speedY += piece.gravity;
-    }
-
-    // remove confetti that has fallen off the screen
-    confetti = confetti.filter(piece => piece.y < canvas.height + 20);
-}
-
-function drawConfetti() {
-    for (let piece of confetti) {
-        ctx.beginPath();
-        ctx.arc(piece.x, piece.y, piece.radius, 0, Math.PI * 2);
-        ctx.fillStyle = piece.color;
-        ctx.fill();
-    }
-}
-
-// =====================================================
 // DRAW EVERYTHING
-// =====================================================
 
 function draw() {
 
-    // draw background
     ctx.fillStyle = backgroundColor;
 
     ctx.fillRect(
@@ -492,33 +82,89 @@ function draw() {
         canvas.height
     );
 
-    // draw Trail
+    drawWalls();
     drawTrail();
-
-    // draw DVD
+    drawFireballTrail();
     drawDVD();
+    drawFireball();
+
+    // uncomment for hitbox debug
+    // drawCollisionBox();
+    drawUI();
 }
 
 
-// =====================================================
 // ANIMATION LOOP
-// =====================================================
 
-function animate() {
-    updateDVD();
-    updateConfetti();
+let previousTime = 0;
+let accumulatedTime = 0;
 
-    draw();
-    drawConfetti();
+function animate(currentTime) {
+    if (previousTime === 0) {
+        previousTime = currentTime;
+        lastRenderTime = currentTime;
+    }
+
+    const elapsedTime = currentTime - previousTime;
+    previousTime = currentTime;
+
+    accumulatedTime += elapsedTime;
+
+    // fixed-time simulation updates
+    while (accumulatedTime >= timestep) {
+        if (gameState === "playing") {
+            updateDVD();
+            updateFireball();
+            updateFadingWalls();
+        }
+
+        updateConfetti();
+
+        accumulatedTime -= timestep;
+    }
+
+    // variable-rate rendering with optional FPS cap (user selected)
+    const renderInterval = maxFPS > 0 ? 1000 / maxFPS : 0;
+
+    if (maxFPS === 0 || currentTime - lastRenderTime >= renderInterval) {
+        draw();
+        drawConfetti();
+
+        lastRenderTime = currentTime;
+    }
 
     requestAnimationFrame(animate);
 }
 
-// =====================================================
 // START
-// =====================================================
 
-animate();
+requestAnimationFrame(animate);
+
+// RESTART
+
+function restartGame() {
+    gameState = "playing";
+    hits = 0;
+    hitCooldown = 0;
+
+    dvdX = originalX;
+    dvdY = originalY;
+
+    dvdSpeedX = 2.4;
+    dvdSpeedY = 1.6;
+
+    fireballX = 700;
+    fireballY = 400;
+
+    fireballSpeedX = 1.8;
+    fireballSpeedY = 1.5;
+
+    walls = [];
+    fadingWalls = [];
+    dvdTrail = [];
+    fireballTrail = [];
+    confetti = [];
+}
 
 </script>
 
