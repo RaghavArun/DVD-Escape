@@ -61,7 +61,7 @@ This keeps the game simulation independent of the rendering frame rate.
 
 Open `index.html` in a web browser, or visit the GitHub Pages version:
 
-**[Play DVD Escape](https://raghavarun.github.io/DVD-animation/)**
+**[Play DVD Escape](https://raghavarun.github.io/DVD-Escape/)**
 
 ## Project Structure
 
