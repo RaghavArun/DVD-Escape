@@ -63,6 +63,8 @@ Open `index.html` in a web browser, or visit the GitHub Pages version:
 
 **[Play DVD Escape](https://raghavarun.github.io/DVD-Escape/)**
 
+If you download the source code, you can uncomment `drawCollisionBox()` in `index.html` to see the DVD's collision box when you play. 
+
 ## Project Structure
 
 ```text
