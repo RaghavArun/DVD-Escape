@@ -1,8 +1,8 @@
 let fireballX = 700;
 let fireballY = 400;
 
-let fireballSpeedX = 1.8;
-let fireballSpeedY = 1.5;
+let fireballSpeedX = 3;
+let fireballSpeedY = 2.4;
 
 let fireballTrail = [];
 let fireballTrailCounter = 0;
